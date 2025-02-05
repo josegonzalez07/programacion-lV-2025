@@ -12,26 +12,21 @@ createApp({
             telefono: '',
             fechaNacimiento: '',
             sexo: '',
-            busqueda: '' // Campo de búsqueda
+            busqueda: '',
+            editando: false
         };
     },
     computed: {
         alumnosFiltrados() {
-            return this.alumnos.filter(alumno => 
+            return this.alumnos.filter(alumno =>
                 alumno.nombre.toLowerCase().includes(this.busqueda.toLowerCase()) ||
                 alumno.codigo.toLowerCase().includes(this.busqueda.toLowerCase())
             );
         }
     },
     methods: {
-        eliminarAlumno(alumno) {
-            if (confirm(`¿Está seguro de eliminar al alumno ${alumno.nombre}?`)) {
-                localStorage.removeItem(alumno.codigo);
-                this.listarAlumnos();
-            }
-        },
         guardarAlumno() {
-            let alumno = {
+            this.alumnos.push({
                 codigo: this.codigo,
                 nombre: this.nombre,
                 direccion: this.direccion,
@@ -40,18 +35,35 @@ createApp({
                 telefono: this.telefono,
                 fechaNacimiento: this.fechaNacimiento,
                 sexo: this.sexo
-            };
-            localStorage.setItem(this.codigo, JSON.stringify(alumno));
-            this.listarAlumnos();
+            });
             this.limpiarFormulario();
         },
-        listarAlumnos() {
-            this.alumnos = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                let clave = localStorage.key(i),
-                    valor = localStorage.getItem(clave);
-                this.alumnos.push(JSON.parse(valor));
+        verAlumno(alumno) {
+            this.codigo = alumno.codigo;
+            this.nombre = alumno.nombre;
+            this.direccion = alumno.direccion;
+            this.distrito = alumno.distrito;
+            this.departamento = alumno.departamento;
+            this.telefono = alumno.telefono;
+            this.fechaNacimiento = alumno.fechaNacimiento;
+            this.sexo = alumno.sexo;
+            this.editando = true;
+        },
+        actualizarAlumno() {
+            const index = this.alumnos.findIndex(a => a.codigo === this.codigo);
+            if (index !== -1) {
+                this.alumnos[index] = {
+                    codigo: this.codigo,
+                    nombre: this.nombre,
+                    direccion: this.direccion,
+                    distrito: this.distrito,
+                    departamento: this.departamento,
+                    telefono: this.telefono,
+                    fechaNacimiento: this.fechaNacimiento,
+                    sexo: this.sexo
+                };
             }
+            this.limpiarFormulario();
         },
         limpiarFormulario() {
             this.codigo = '';
@@ -62,9 +74,7 @@ createApp({
             this.telefono = '';
             this.fechaNacimiento = '';
             this.sexo = '';
+            this.editando = false;
         }
-    },
-    created() {
-        this.listarAlumnos();
     }
 }).mount('#app');

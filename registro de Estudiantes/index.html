@@ -37,6 +37,10 @@
             margin-right: 8px;
             color: #007bff;
         }
+        tr:hover {
+            cursor: pointer;
+            background-color: #e0e0e0 !important;
+        }
     </style>
 </head>
 <body>
@@ -45,15 +49,15 @@
             <div class="row">
                 <!-- Formulario de Registro -->
                 <div class="col-md-5">
-                    <form @submit.prevent="guardarAlumno">
+                    <form @submit.prevent="editando ? actualizarAlumno() : guardarAlumno()">
                         <div class="card border-dark">
                             <div class="card-header text-center">
-                                <h5>Registro de Alumnos</h5>
+                                <h5>{{ editando ? "Editar Alumno" : "Registro de Alumnos" }}</h5>
                             </div>
                             <div class="card-body">
                                 <div class="mb-2">
                                     <label class="form-label">Código</label>
-                                    <input required v-model="codigo" type="text" class="form-control">
+                                    <input required v-model="codigo" type="text" class="form-control" :disabled="editando">
                                 </div>
                                 <div class="mb-2">
                                     <label class="form-label">Nombre</label>
@@ -89,8 +93,8 @@
                                 </div>
                             </div>
                             <div class="card-footer text-center">
-                                <button type="submit" class="btn btn-success">Guardar</button>
-                                <button type="reset" @click="limpiarFormulario" class="btn btn-secondary">Nuevo</button>
+                                <button type="submit" class="btn btn-success">{{ editando ? "Actualizar" : "Guardar" }}</button>
+                                <button type="button" @click="limpiarFormulario" class="btn btn-secondary">Nuevo</button>
                             </div>
                         </div>
                     </form>
@@ -111,18 +115,20 @@
                                 <th>Dirección</th>
                                 <th>Distrito</th>
                                 <th>Departamento</th>
+                                <th>Sexo</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="alumno in alumnosFiltrados" :key="alumno.codigo">
+                            <tr v-for="alumno in alumnosFiltrados" :key="alumno.codigo" @click="verAlumno(alumno)">
                                 <td>{{ alumno.codigo }}</td>
                                 <td>{{ alumno.nombre }}</td>
                                 <td>{{ alumno.direccion }}</td>
                                 <td>{{ alumno.distrito }}</td>
                                 <td>{{ alumno.departamento }}</td>
+                                <td>{{ alumno.sexo }}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm" @click="eliminarAlumno(alumno)">Eliminar</button>
+                                    <button class="btn btn-danger btn-sm" @click.stop="eliminarAlumno(alumno)">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>
